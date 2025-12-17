@@ -14,7 +14,7 @@ All MCP dimensions are in **centimeters**, but users often think in millimeters.
 - A "50mm box" becomes half a meter
 
 ### Solution
-**Always convert:** `mm ÷ 10 = cm`
+**Always convert:** `mm ÃƒÂ· 10 = cm`
 
 | User Says | You Enter |
 |-----------|-----------|
@@ -72,12 +72,12 @@ User asks to "save" but Claude exports a STEP file. Design is lost when Fusion c
 | **Save** | Persists .f3d to Fusion cloud |
 | **Export** | Creates external file (STL, STEP) |
 
-**Export ≠ Save.** They are completely different operations.
+**Export Ã¢â€°Â  Save.** They are completely different operations.
 
 ### Solution
 The MCP currently lacks a save command. When user says "save":
 1. Inform them the MCP cannot save directly
-2. Ask them to manually save (Ctrl+S or File → Save)
+2. Ask them to manually save (Ctrl+S or File Ã¢â€ â€™ Save)
 3. Wait for confirmation
 4. Then export if requested
 
@@ -116,7 +116,7 @@ Deleting a component causes index shifts, breaking subsequent operations.
 Holes for fasteners are wrong size or position.
 
 ### Solution
-Standard clearance holes (mm → cm for MCP):
+Standard clearance holes (mm Ã¢â€ â€™ cm for MCP):
 
 | Fastener | Clearance Hole | Enter in MCP |
 |----------|---------------|--------------|
@@ -172,4 +172,115 @@ This is 5-10x faster than individual calls.
 
 ---
 
-*Document current as of MCP v7.2*
+
+
+---
+
+## 11. XZ Plane Y-Axis Inversion (CONFIRMED - BY DESIGN)
+
+### Problem
+When drawing geometry on the XZ plane with `center_y=0.3`, the resulting geometry appears at World Z=-0.3 instead of Z=0.3. The Y-axis is **inverted** relative to World Z.
+
+### Root Cause (Confirmed by Autodesk Engineering)
+
+This is **intentional behavior**, not a bug. The XZ plane has inverted Y because of two competing requirements:
+
+**Requirement 1:** Positive extrusion on XZ plane must go toward +Y (into the model)
+**Requirement 2:** All Fusion coordinate systems must be right-handed
+
+To satisfy BOTH requirements, Sketch Y must map to -World Z.
+
+```
+XZ Plane Coordinate Mapping:
+  Sketch X  â†’  World X   (unchanged)
+  Sketch Y  â†’  World -Z  (INVERTED!)
+  Extrude+  â†’  World +Y  (as expected)
+```
+
+### Plane Comparison
+
+| Plane | Sketch X | Sketch Y | Normal (Extrude+) | Natural? |
+|-------|----------|----------|-------------------|----------|
+| XY | World +X | World +Y | World +Z | âœ“ Yes |
+| YZ | World +Y | World +Z | World +X | âœ“ Yes |
+| **XZ** | World +X | **World -Z** | World +Y | âœ— **INVERTED** |
+
+### Solution: Negate Y for Z Positioning
+
+```python
+# To place geometry at World Z = target_z on XZ plane:
+sketch_y = -target_z  # NEGATE!
+
+# Example: Center at World Z = +0.3
+draw_polygon(center_x=0, center_y=-0.3, ...)  # Use -0.3!
+
+# Example: Center at World Z = -1.0
+draw_circle(center_x=0, center_y=1.0, ...)    # Use +1.0!
+```
+
+### Quick Reference
+
+| Target World Z | Use center_y = |
+|----------------|----------------|
+| +2.0 | -2.0 |
+| +0.3 | -0.3 |
+| 0 | 0 |
+| -0.5 | +0.5 |
+| -2.0 | +2.0 |
+
+**Formula: `center_y = -target_world_z`**
+
+### Alternative: Use XY Plane Instead
+
+```python
+# Avoid XZ plane entirely for Z-critical positioning:
+create_sketch(plane="XY", offset=target_z)
+draw_polygon(center_x=0, center_y=y_position, ...)
+extrude(distance=thickness)  # Goes +Z, no inversion
+```
+
+### Source
+
+Autodesk Engineering Director Jeff Strater confirmed this is by design:
+- Thread: https://forums.autodesk.com/t5/fusion-support-forum/sketch-on-xz-plane-shows-z-positive-downwards-left-handed-coord/td-p/11675127
+- Detailed explanation: https://forums.autodesk.com/t5/fusion-design-validate-document/why-is-my-sketch-text-appearing-upside-down/m-p/6645704
+
+---
+
+## 12. Auto-Join Without User Verification
+
+### Problem
+Claude automatically joins newly created bodies to the main model without asking for user verification first. If the geometry is wrong, it's now permanently merged and requires manual undo.
+
+### Why This Happens
+- Trying to be "efficient" by combining steps
+- Overconfidence that geometry is correct
+- Ignoring documented join protocol
+
+### Impact
+- Wrong geometry gets baked into model
+- User must manually undo (Ctrl+Z) multiple operations
+- Time wasted, trust eroded
+
+### Solution: ALWAYS Verify Before Join
+
+```python
+# 1. Create geometry as separate body
+extrude(...)  # Creates NEW body
+
+# 2. Confirm body exists
+get_design_info()  # Check body_count
+
+# 3. ASK USER - DO NOT SKIP THIS
+# "Created [part] as separate body. Please verify position/shape."
+# "Confirm to join?"
+
+# 4. Wait for explicit "yes" before:
+combine(operation="join", ...)
+```
+
+### Hard Rule
+**NEVER call combine() without explicit user approval.** The 10 seconds saved by auto-joining can cost 10 minutes of cleanup when something is wrong.
+
+---
+*Document current as of MCP v8.2*
