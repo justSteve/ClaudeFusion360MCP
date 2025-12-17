@@ -1,0 +1,13 @@
+﻿{
+    "autodeskProduct": "Fusion",
+    "type": "addin",
+    "id": "FusionMCP",
+    "author": "Claude AI",
+    "description": {
+        "": "MCP Server for Fusion 360"
+    },
+    "version": "2.0.0",
+    "runOnStartup": true,
+    "supportedOS": "windows|mac",
+    "editEnabled": true
+}
