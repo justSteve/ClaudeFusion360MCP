@@ -16,7 +16,7 @@ This MCP server lets Claude AI directly control Fusion 360 to:
 - Export to STL, STEP, and 3MF formats
 - Measure geometry and verify designs
 
-**Example prompt:** *"Create a 50mm cube with 5mm rounded edges"* Ã¢â€ â€™ Claude creates it directly in Fusion 360.
+**Example prompt:** *"Create a 50mm cube with 5mm rounded edges"* → Claude creates it directly in Fusion 360.
 
 ---
 
@@ -41,11 +41,11 @@ cd fusion360-mcp
 ### Step 2: Install the Fusion 360 Add-in
 
 1. Open Fusion 360
-2. Go to **Utilities** Ã¢â€ â€™ **ADD-INS** (or press `Shift+S`)
-3. Click **Add-Ins** tab Ã¢â€ â€™ **Green Plus (+)** button
+2. Go to **Utilities** → **ADD-INS** (or press `Shift+S`)
+3. Click **Add-Ins** tab → **Green Plus (+)** button
 4. Navigate to the `fusion-addin` folder from this repo
-5. Select `FusionMCP` folder Ã¢â€ â€™ Click **Open**
-6. Check **Run on Startup** Ã¢â€ â€™ Click **Run**
+5. Select `FusionMCP` folder → Click **Open**
+6. Check **Run on Startup** → Click **Run**
 
 You should see: *"Fusion MCP Started! Listening at: C:\Users\...\fusion_mcp_comm"*
 
@@ -69,7 +69,7 @@ Add this to the `mcpServers` section:
 }
 ```
 
-Ã¢Å¡Â Ã¯Â¸Â **Use forward slashes** in the path, even on Windows.
+> **Note:** Use forward slashes in the path, even on Windows.
 
 ### Step 4: Add the Skill File (Recommended)
 
@@ -96,11 +96,11 @@ For best results, create a **Claude Project** and paste the contents of `docs/SK
 ## How It Works
 
 ```
-Ã¢â€Å’Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€Â     MCP      Ã¢â€Å’Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€Â    File     Ã¢â€Å’Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€Â
-Ã¢â€â€š   Claude    Ã¢â€â€š Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Ã¢â€â€š  MCP Server         Ã¢â€â€š Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Ã¢â€â€š  Fusion 360 Ã¢â€â€š
-Ã¢â€â€š   Desktop   Ã¢â€â€š   Protocol   Ã¢â€â€š  (fusion360_mcp_    Ã¢â€â€š   System    Ã¢â€â€š  Add-in     Ã¢â€â€š
-Ã¢â€â€š             Ã¢â€â€š              Ã¢â€â€š   server.py)        Ã¢â€â€š             Ã¢â€â€š  (FusionMCP)Ã¢â€â€š
-Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€Ëœ              Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€Ëœ             Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€Ëœ
+┌─────────────┐     MCP      ┌─────────────────────┐    File     ┌─────────────┐
+│   Claude    │ ←→ Protocol → │  MCP Server         │ ←→ System ←→ │  Fusion 360 │
+│   Desktop   │              │  (fusion360_mcp_    │             │  Add-in     │
+│             │              │   server.py)        │             │  (FusionMCP)│
+└─────────────┘              └─────────────────────┘             └─────────────┘
 ```
 
 1. Claude sends commands via MCP protocol
@@ -130,7 +130,7 @@ See `docs/TOOL_REFERENCE.md` for complete API documentation.
 
 ## Important: Units Are in Centimeters!
 
-Ã¢Å¡Â Ã¯Â¸Â **All dimensions in the MCP are in CENTIMETERS**, not millimeters.
+⚠️ **All dimensions in the MCP are in CENTIMETERS**, not millimeters.
 
 | You Want | You Enter |
 |----------|-----------|
@@ -146,20 +146,20 @@ This is the most common source of errors. A value of `50` means 50 cm (half a me
 
 ```
 fusion360-mcp/
-Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ README.md                 # This file
-Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ LICENSE                   # MIT License
-Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ mcp-server/
-Ã¢â€â€š   Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ fusion360_mcp_server.py   # MCP server (run by Claude Desktop)
-Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ fusion-addin/
-Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ FusionMCP.py          # Fusion 360 add-in code
-Ã¢â€â€š   Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ FusionMCP.manifest    # Add-in manifest
-Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ docs/
-Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ SKILL.md              # Claude Project instructions
-Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ SPATIAL_AWARENESS.md  # 3D coordinate system & verification
-Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ TOOL_REFERENCE.md     # Complete API reference
-Ã¢â€â€š   Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ KNOWN_ISSUES.md       # Common pitfalls and solutions
-Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ examples/
-    Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ getting_started.md    # Tutorial examples
+├── README.md                 # This file
+├── LICENSE                   # MIT License
+├── mcp-server/
+│   └── fusion360_mcp_server.py   # MCP server (run by Claude Desktop)
+├── fusion-addin/
+│   ├── FusionMCP.py          # Fusion 360 add-in code
+│   └── FusionMCP.manifest    # Add-in manifest
+├── docs/
+│   ├── SKILL.md              # Claude Project instructions
+│   ├── SPATIAL_AWARENESS.md  # 3D coordinate system & verification
+│   ├── TOOL_REFERENCE.md     # Complete API reference
+│   └── KNOWN_ISSUES.md       # Common pitfalls and solutions
+└── examples/
+    └── getting_started.md    # Tutorial examples
 ```
 
 ---
@@ -169,7 +169,7 @@ fusion360-mcp/
 ### "Timeout after 45s" Error
 - Fusion 360 is not running, OR
 - The FusionMCP add-in is not started
-- **Fix:** Open Fusion 360 Ã¢â€ â€™ Utilities Ã¢â€ â€™ Add-Ins Ã¢â€ â€™ Run FusionMCP
+- **Fix:** Open Fusion 360 → Utilities → Add-Ins → Run FusionMCP
 
 ### Claude doesn't see the Fusion 360 tools
 - MCP server path is wrong in config
