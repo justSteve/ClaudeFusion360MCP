@@ -1,6 +1,6 @@
 # AuraFriday MCP-Link Integration Guide
 
-**Status:** DRAFT - sections marked [TODO] need verification after hands-on testing
+**Status:** DRAFT - sections marked [TODO] need verification after Phase 1 installation
 **Created:** 2026-02-10
 **Repository:** https://github.com/justSteve/ClaudeFusion360MCP
 
@@ -94,11 +94,13 @@ git clone https://github.com/justSteve/ClaudeFusion360MCP.git
 cd ClaudeFusion360MCP
 ```
 
-The skill files are in the `docs/` directory:
-- `docs/SKILL.md` - Comprehensive CAD operations guide (coordinate systems, tool reference, manufacturing guidelines, verified lessons learned)
-- `docs/SPATIAL_AWARENESS.md` - Geometric verification protocols (pre/post operation checklists, error case library)
-- `docs/KNOWN_ISSUES.md` - Battle-tested troubleshooting guide
-- `docs/TOOL_REFERENCE.md` - Tool API reference
+The skill files are in the `skills/` directory:
+- `skills/SKILL.md` - Primary CAD skill (coordinate systems, assembly, manufacturing guidelines, verified lessons)
+- `skills/SPATIAL_AWARENESS.md` - Geometric verification protocols (pre/post operation checklists, error case library)
+- `skills/ENGINEERING_LITERACY.md` - Manufacturing reasoning, tolerances, model-vs-reality
+- `skills/AURAFRIDAY_PATTERNS.md` - Python execution templates and API recipes
+- `skills/KNOWN_ISSUES.md` - Battle-tested troubleshooting guide
+- `skills/BUILD123D_BRIDGE.md` - Concept mapping from Build123d to Fusion 360
 
 ---
 
@@ -166,9 +168,11 @@ In Claude Desktop, create a project and add the skill files as project knowledge
 1. Open Claude Desktop
 2. Create a new Project (or open an existing one)
 3. Click on "Project knowledge" (or similar)
-4. Upload the following files from this repo's `docs/` directory:
-   - `SKILL.md` (primary - coordinate systems, tool patterns, manufacturing guidelines)
+4. Upload the following files from this repo's `skills/` directory:
+   - `SKILL.md` (primary - coordinate systems, assembly, manufacturing)
    - `SPATIAL_AWARENESS.md` (companion - verification protocols, error case library)
+   - `ENGINEERING_LITERACY.md` (manufacturing reasoning, tolerances)
+   - `AURAFRIDAY_PATTERNS.md` (Python API recipes)
    - `KNOWN_ISSUES.md` (reference - troubleshooting)
 
 **Alternative:** Paste the content of these files into the project's custom instructions.
@@ -182,15 +186,18 @@ For Claude Code, reference the skill files in your project's `CLAUDE.md`:
 
 When performing CAD operations via the fusion360 MCP tool, load and follow these skill files:
 
-- Coordinate system rules and tool reference: `C:\myStuff\_infra\ClaudeFusion360MCP\docs\SKILL.md`
-- Spatial verification protocols: `C:\myStuff\_infra\ClaudeFusion360MCP\docs\SPATIAL_AWARENESS.md`
-- Known issues and troubleshooting: `C:\myStuff\_infra\ClaudeFusion360MCP\docs\KNOWN_ISSUES.md`
+- Primary skill: `C:\myStuff\_infra\ClaudeFusion360MCP\skills\SKILL.md`
+- Spatial verification: `C:\myStuff\_infra\ClaudeFusion360MCP\skills\SPATIAL_AWARENESS.md`
+- Engineering literacy: `C:\myStuff\_infra\ClaudeFusion360MCP\skills\ENGINEERING_LITERACY.md`
+- API recipes: `C:\myStuff\_infra\ClaudeFusion360MCP\skills\AURAFRIDAY_PATTERNS.md`
+- Troubleshooting: `C:\myStuff\_infra\ClaudeFusion360MCP\skills\KNOWN_ISSUES.md`
 
-Key rules from these files:
+Key rules:
 - ALL dimensions in centimeters (mm / 10)
 - Z-negation on XZ and YZ planes (Sketch Y -> -World Z on XZ; Sketch X -> -World Z on YZ)
 - Face/edge indices are unstable after any geometry operation - always re-query
 - Never auto-join bodies - always verify with user first
+- State manufacturing method and model-vs-reality for every part
 ```
 
 ### Option C: Direct Prompt Loading

@@ -1,10 +1,13 @@
 ﻿---
 name: spatial-awareness-cad
 description: Spatial reasoning and geometric verification protocols for CAD operations. Teaches coordinate interpretation, bounding box analysis, extrusion direction prediction, and pre/post operation verification. Designed to prevent geometry placement errors.
-version: 1.2.1
-model_target: claude-opus-4-5
-companion_skills: 
-  - SKILL_Fusion360_Opus_v4.0.md
+version: 1.3.0
+model_target: any-claude-model
+execution_layer: AuraFriday MCP-Link (Python execution in Fusion 360 runtime)
+companion_skills:
+  - SKILL.md
+  - ENGINEERING_LITERACY.md
+  - AURAFRIDAY_PATTERNS.md
 last_updated: 2026-02-10
 ---
 
@@ -26,7 +29,7 @@ will land where intended BEFORE executing operations.
 
 **Core Principle**: Never assume spatial relationships — verify them programmatically.
 
-**Load this skill WITH the Fusion360 skill for any CAD work.**
+**Load this skill WITH the Fusion 360 skill files (SKILL.md, ENGINEERING_LITERACY.md, AURAFRIDAY_PATTERNS.md) for any CAD work.**
 
 ---
 
@@ -115,14 +118,12 @@ When using `create_sketch(plane, offset)`:
 
 ### 2.1 Reading Bounding Box Data
 
-When `measure(type="body")` returns:
-```json
-{
-  "bounding_box": {
-    "min": {"x": -4.25, "y": -8.52, "z": 0.0},
-    "max": {"x": 4.25, "y": 8.52, "z": 1.375}
-  }
-}
+When querying a body's bounding box:
+```python
+body = rootComponent.bRepBodies.item(0)
+bb = body.boundingBox
+# bb.minPoint = (-4.25, -8.52, 0.0)
+# bb.maxPoint = (4.25, 8.52, 1.375)
 ```
 
 **Interpretation:**
@@ -168,7 +169,7 @@ Interior right surface: X = +4.25 - 0.3 = +3.95
   - What are the X, Y, Z coordinates of the new geometry's bounds?
 
 □ Step 2: QUERY EXISTING GEOMETRY
-  - Call measure(type="body") or get_body_info()
+  - Query body bounding box and face/edge info via Python
   - Identify relevant surfaces from bounding box
   - Note wall thickness if operating on shelled body
 
@@ -186,7 +187,7 @@ Interior right surface: X = +4.25 - 0.3 = +3.95
 
 □ Step 5: EXECUTE AND VERIFY
   - Run the operation
-  - Call measure() to verify actual vs predicted bounds
+  - Query bounding box to verify actual vs predicted bounds
   - Request visual verification if uncertain
 ```
 
@@ -362,17 +363,19 @@ The cases below were discovered through actual CAD failures during development. 
 - To find side faces: look for faces with centroid at x/y extremes
 
 **Identification Strategy**:
-```
-To find TOP face after modifications:
-1. Call get_body_info()
-2. Find face where centroid.z equals bounding_box.max.z
-3. Use THAT index for shell/other operations
+```python
+# To find TOP face after modifications:
+body = rootComponent.bRepBodies.item(0)
+top_face = None
+max_z = -float('inf')
+for face in body.faces:
+    if face.centroid.z > max_z:
+        max_z = face.centroid.z
+        top_face = face
+# Use top_face for shell or other operations
 
-To find BOTTOM face:
-1. Find face where centroid.z equals bounding_box.min.z
-
-To find SIDE faces:
-1. Find faces where centroid.x or centroid.y equals bounding box extremes
+# To find BOTTOM face: face with centroid.z == bounding_box min z
+# To find SIDE faces: faces with centroid.x or centroid.y at bounding box extremes
 ```
 
 ---
@@ -382,15 +385,15 @@ To find SIDE faces:
 ### 5.1 After Every Geometry Operation
 
 ```
-□ Call measure(type="body") on the affected body
+□ Query bounding box on the affected body
 □ Compare actual bounding box to predicted bounding box
 □ Verify:
-  - min.x, max.x match expected X bounds (±0.001 tolerance)
-  - min.y, max.y match expected Y bounds (±0.001 tolerance)  
-  - min.z, max.z match expected Z bounds (±0.001 tolerance)
+  - minPoint.x, maxPoint.x match expected X bounds (±0.001 tolerance)
+  - minPoint.y, maxPoint.y match expected Y bounds (±0.001 tolerance)
+  - minPoint.z, maxPoint.z match expected Z bounds (±0.001 tolerance)
 □ If multiple bodies exist, verify correct body was modified
 □ Check body count - did operation create new body or modify existing?
-□ For assemblies: call check_interference()
+□ For assemblies: check component interference
 □ If ANY verification fails: STOP and diagnose before proceeding
 ```
 
@@ -450,15 +453,19 @@ Before executing, ask yourself:
 
 ```yaml
 skill_name: spatial-awareness-cad
-version: 1.2.1
-target_model: claude-opus-4-5
+version: 1.3.0
+target_model: any-claude-model
+execution_layer: AuraFriday MCP-Link
 companion_skills:
-  - SKILL_Fusion360_Opus_v4.0.md
+  - SKILL.md
+  - ENGINEERING_LITERACY.md
+  - AURAFRIDAY_PATTERNS.md
 created: 2024-12-09
 last_updated: 2026-02-10
 error_cases_documented: 4
 training_status: CALIBRATED - Z-negation rule verified
 changelog:
+  v1.3.0: Updated for AuraFriday MCP-Link execution model, replaced MCP tool syntax with Python equivalents, updated companion skill references
   v1.2.1: Added empirical authority notice, clarified implementation-agnostic nature of error cases, updated metadata
   v1.2.0: Added Error Case 004 (face index instability), added INDEX INSTABILITY RULE
   v1.1.0: Added Z-negation rule (empirically verified), updated coordinate mapping tables, added error cases 002 and 003

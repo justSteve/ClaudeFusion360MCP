@@ -1,18 +1,18 @@
 # Known Issues and Solutions
 
-Common pitfalls when using the Fusion 360 MCP, and how to avoid them.
+Common pitfalls when working with Fusion 360 via AuraFriday MCP-Link (or any API interface).
 
 > **Note on Empirical Verification**: Issues #11 (XZ Plane Y-Axis Inversion) and #12
 > (Auto-Join Protocol) are empirically verified against Autodesk engineering documentation
-> and real CAD failures. These findings are implementation-agnostic — they apply to any
-> system that interfaces with Fusion 360's coordinate system, not just this MCP implementation.
+> and real CAD failures. These findings are implementation-agnostic -- they apply to any
+> system that interfaces with Fusion 360's coordinate system.
 
 ---
 
 ## 1. Unit Confusion (Most Common!)
 
 ### Problem
-All MCP dimensions are in **centimeters**, but users often think in millimeters.
+All Fusion 360 API dimensions are in **centimeters**, but users often think in millimeters.
 
 ### Symptoms
 - Parts are 10x too large or too small
@@ -60,9 +60,9 @@ Components appear at origin instead of intended position, or overlap.
 - **Spreading** = Different X,Y (parts side by side)
 
 ### Solution
-1. **Always call `list_components()`** before positioning
-2. Use `move_component()` after creation
-3. Verify with `get_design_info()` to check positions
+1. **Always query component positions** before positioning new ones
+2. Use occurrence transforms after creation
+3. Verify by querying bounding boxes after moves
 
 ---
 
@@ -95,8 +95,14 @@ Trying to create beveled edges on thin parts using boolean cuts (fails or create
 
 ### Solution
 Use **chamfer**, not boolean operations:
-```
-chamfer(edges=[...], distance=thickness/2)
+```python
+edges = adsk.core.ObjectCollection.create()
+# ... add target edges ...
+chamfer_input = rootComponent.features.chamferFeatures.createInput2()
+chamfer_input.chamferEdgeSets.addEqualDistanceChamferEdgeSet(
+    edges, adsk.core.ValueInput.createByReal(thickness / 2), True
+)
+rootComponent.features.chamferFeatures.add(chamfer_input)
 ```
 
 For knife/blade edges, chamfer distance should be approximately half the material thickness.
@@ -111,7 +117,7 @@ Deleting a component causes index shifts, breaking subsequent operations.
 ### Solution
 1. **Delete in reverse order** (highest index first)
 2. Or delete by name, not index
-3. Always re-query `list_components()` after any deletion
+3. Always re-query component list after any deletion
 
 ---
 
@@ -121,15 +127,17 @@ Deleting a component causes index shifts, breaking subsequent operations.
 Holes for fasteners are wrong size or position.
 
 ### Solution
-Standard clearance holes (mm → cm for MCP):
+Standard clearance holes (mm -> cm for Fusion API):
 
-| Fastener | Clearance Hole | Enter in MCP |
-|----------|---------------|--------------|
+| Fastener | Clearance Hole | API Value (cm) |
+|----------|---------------|----------------|
 | M3 | 3.4 mm | `0.34` |
 | M4 | 4.5 mm | `0.45` |
 | M5 | 5.5 mm | `0.55` |
 | #6 | 4.0 mm | `0.40` |
 | 1/4" | 7.0 mm | `0.70` |
+
+See ENGINEERING_LITERACY.md Section 4 for full ISO 273 tolerance tables.
 
 ---
 
@@ -140,8 +148,8 @@ Parts that should fit together either collide or have gaps.
 
 ### Solution
 1. Design with **clearances** (0.2-0.5mm for 3D printing)
-2. Use `measure()` to verify distances
-3. Check interference with `get_body_info()` before combining
+2. Query bounding boxes to verify distances
+3. Check for interference before combining
 
 ---
 
@@ -152,28 +160,38 @@ Claude assumes prior work exists, but Fusion crashed/recovered to earlier state.
 
 ### Solution
 **At session start, always:**
-1. Call `get_design_info()` to verify current state
+1. Query design state (body count, component list, bounding boxes)
 2. Check body count matches expectations
 3. Don't assume anything from previous sessions
 
 ---
 
-## 10. Batch Operations
+## 10. Multiple Operations Per Call
 
-### Problem
-Many small operations are slow (each has ~50ms roundtrip).
+### Problem (Historical)
+The rahayesj MCP required separate MCP calls for each operation (~50ms roundtrip each), making multi-step modeling slow.
 
-### Solution
-Use `batch_operations()` for multiple related commands:
+### Solution (AuraFriday)
+With AuraFriday's Python execution, multiple operations run in a single block:
 ```python
-batch_operations([
-    {"tool": "draw_rectangle", "params": {...}},
-    {"tool": "draw_circle", "params": {...}},
-    {"tool": "extrude", "params": {...}}
-])
+import adsk.core, adsk.fusion
+
+# All of this executes in one MCP call
+sketch = rootComponent.sketches.add(rootComponent.xYConstructionPlane)
+lines = sketch.sketchCurves.sketchLines
+lines.addTwoPointRectangle(
+    adsk.core.Point3D.create(-5, -5, 0),
+    adsk.core.Point3D.create(5, 5, 0)
+)
+profile = sketch.profiles.item(0)
+extrudes = rootComponent.features.extrudeFeatures
+ext_input = extrudes.createInput(profile, adsk.fusion.FeatureOperations.NewBodyFeatureOperation)
+ext_input.setDistanceExtent(False, adsk.core.ValueInput.createByReal(2.0))
+extrudes.add(ext_input)
+print("Created box in single execution block")
 ```
 
-This is 5-10x faster than individual calls.
+No batching API needed -- just write sequential Python.
 
 ---
 
@@ -213,10 +231,10 @@ XZ Plane Coordinate Mapping:
 sketch_y = -target_z  # NEGATE!
 
 # Example: Center at World Z = +0.3
-draw_polygon(center_x=0, center_y=-0.3, ...)  # Use -0.3!
+# When creating sketch geometry on XZ plane, use center_y = -0.3
 
 # Example: Center at World Z = -1.0
-draw_circle(center_x=0, center_y=1.0, ...)    # Use +1.0!
+# When creating sketch geometry on XZ plane, use center_y = +1.0
 ```
 
 ### Quick Reference
@@ -235,9 +253,9 @@ draw_circle(center_x=0, center_y=1.0, ...)    # Use +1.0!
 
 ```python
 # Avoid XZ plane entirely for Z-critical positioning:
-create_sketch(plane="XY", offset=target_z)
-draw_polygon(center_x=0, center_y=y_position, ...)
-extrude(distance=thickness)  # Goes +Z, no inversion
+# Create an offset construction plane at target_z
+# Sketch on that offset plane -- XY has direct mapping, no inversion
+# Extrude goes +Z (no negation needed)
 ```
 
 ### Source
@@ -266,22 +284,27 @@ Claude automatically joins newly created bodies to the main model without asking
 ### Solution: ALWAYS Verify Before Join
 
 ```python
-# 1. Create geometry as separate body
-extrude(...)  # Creates NEW body
+# 1. Create geometry as separate body (NewBodyFeatureOperation)
+# ... extrude code ...
 
 # 2. Confirm body exists
-get_design_info()  # Check body_count
+print(f"Bodies: {rootComponent.bRepBodies.count}")
 
 # 3. ASK USER - DO NOT SKIP THIS
 # "Created [part] as separate body. Please verify position/shape."
 # "Confirm to join?"
 
-# 4. Wait for explicit "yes" before:
-combine(operation="join", ...)
+# 4. Wait for explicit "yes" before combining:
+# target = rootComponent.bRepBodies.item(0)
+# tools = adsk.core.ObjectCollection.create()
+# tools.add(rootComponent.bRepBodies.item(1))
+# combine_input = rootComponent.features.combineFeatures.createInput(target, tools)
+# combine_input.operation = adsk.fusion.FeatureOperations.JoinFeatureOperation
+# rootComponent.features.combineFeatures.add(combine_input)
 ```
 
 ### Hard Rule
-**NEVER call combine() without explicit user approval.** The 10 seconds saved by auto-joining can cost 10 minutes of cleanup when something is wrong.
+**NEVER call combine without explicit user approval.** The 10 seconds saved by auto-joining can cost 10 minutes of cleanup when something is wrong.
 
 ---
-*Document current as of MCP v8.2*
+*Document current as of v2.0 (AuraFriday MCP-Link)*

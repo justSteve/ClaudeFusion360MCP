@@ -1,229 +1,78 @@
-# Fusion 360 MCP Server
+# Fusion 360 CAD Skill Library
 
-Control Autodesk Fusion 360 with Claude AI through the Model Context Protocol (MCP).
+Spatial reasoning, engineering literacy, and manufacturing awareness for AI-assisted CAD modeling in Autodesk Fusion 360.
 
-![MCP Version](https://img.shields.io/badge/MCP-1.0-blue)
-![Fusion 360](https://img.shields.io/badge/Fusion%20360-2024+-orange)
-![Python](https://img.shields.io/badge/Python-3.10+-green)
-![License](https://img.shields.io/badge/License-MIT-yellow)
+## What This Is
 
-## What This Does
+A collection of skill files that teach Claude (or any LLM) how to reason about 3D geometry, coordinate systems, manufacturing constraints, and engineering design when operating Fusion 360 through AuraFriday MCP-Link.
 
-![Fusion 360 MCP Demo](images/hero-demo.gif)
-*Ask Claude to create a part, watch it appear in Fusion 360*
+This is **not** an MCP server. The original rahayesj MCP server code is preserved in `archive/` for reference. Actual Fusion 360 execution is handled by [AuraFriday MCP-Link](https://apps.autodesk.com/FUSION/en/Detail/Index?id=7269770001970905100), which provides full Fusion 360 API access.
 
-This MCP server lets Claude AI directly control Fusion 360 to: lets Claude AI directly control Fusion 360 to:
-- Create 3D sketches, extrusions, revolves, and sweeps
-- Build multi-component assemblies with proper positioning
-- Apply fillets, chamfers, shells, and patterns
-- Export to STL, STEP, and 3MF formats
-- Measure geometry and verify designs
+## Skill Files
 
-**Example prompt:** *"Create a 50mm cube with 5mm rounded edges"* â†’ Claude creates it directly in Fusion 360.
+| File | Purpose | Load When |
+|------|---------|-----------|
+| `skills/SKILL.md` | Coordinate systems, assembly positioning, manufacturing guidelines, verified lessons learned | Always |
+| `skills/SPATIAL_AWARENESS.md` | Pre/post operation verification, error case library, bounding box interpretation | Always |
+| `skills/ENGINEERING_LITERACY.md` | Model-vs-reality protocol, manufacturing method declaration, tolerances, assembly hierarchy | Always |
+| `skills/AURAFRIDAY_PATTERNS.md` | Python execution templates, common API recipes for AuraFriday | Always |
+| `skills/KNOWN_ISSUES.md` | Troubleshooting reference for common Fusion 360 pitfalls | As needed |
+| `skills/BUILD123D_BRIDGE.md` | Concept mapping for teams migrating from Build123d | As needed |
 
----
-
-## Quick Start (5 minutes)
+## Quick Start
 
 ### Prerequisites
 - Autodesk Fusion 360 (free for personal use)
-- Claude Desktop app with MCP support
-- Python 3.10+ with `pip`
+- AuraFriday MCP-Link ([server](https://github.com/AuraFriday/mcp-link-server/releases/tag/latest) + [Fusion add-in](https://apps.autodesk.com/FUSION/en/Detail/Index?id=7269770001970905100))
+- Claude Desktop or Claude Code
 
-### Step 1: Install the MCP Server
+### Setup
+1. Install Fusion 360, AuraFriday MCP-Link server, and the Fusion add-in
+2. Configure Claude's MCP settings to connect to AuraFriday (see `integration/AURAFRIDAY_SETUP.md`)
+3. Load skill files into your Claude project or CLAUDE.md
 
-```bash
-# Install the MCP framework
-pip install mcp
+### For Claude Desktop
+Create a project and add the skill files from `skills/` as project knowledge.
 
-# Clone this repository (or download ZIP)
-git clone https://github.com/YOUR_USERNAME/fusion360-mcp.git
-cd fusion360-mcp
+### For Claude Code
+Reference the skill files in your project's CLAUDE.md:
+```markdown
+## Fusion 360 CAD Skills
+When performing CAD operations, load and follow these skill files:
+- C:\path\to\ClaudeFusion360MCP\skills\SKILL.md
+- C:\path\to\ClaudeFusion360MCP\skills\SPATIAL_AWARENESS.md
+- C:\path\to\ClaudeFusion360MCP\skills\ENGINEERING_LITERACY.md
+- C:\path\to\ClaudeFusion360MCP\skills\AURAFRIDAY_PATTERNS.md
 ```
 
-### Step 2: Install the Fusion 360 Add-in
+## Critical Rules (Summary)
 
-1. Open Fusion 360
-2. Go to **Utilities** â†’ **ADD-INS** (or press `Shift+S`)
-3. Click **Add-Ins** tab â†’ **Green Plus (+)** button
-4. Navigate to the `fusion-addin` folder from this repo
-5. Select `FusionMCP` folder â†’ Click **Open**
-6. Check **Run on Startup** â†’ Click **Run**
+1. **ALL dimensions in centimeters** -- Fusion API internal unit is cm. 50mm = 5.0, not 50.
+2. **Z-negation on XZ/YZ planes** -- sketch coordinates negate World Z. Empirically verified.
+3. **Face/edge indices are unstable** -- re-query after every geometry operation.
+4. **Never auto-join** -- create bodies separately, verify with user, then combine.
+5. **Export != Save** -- separate operations.
 
-You should see: *"Fusion MCP Started! Listening at: C:\Users\...\fusion_mcp_comm"*
-
-![Add-in Success](images/addon-success.png)
-*Successfully installed FusionMCP add-in*
-
-### Step 3: Configure Claude Desktop
-
-Edit your Claude Desktop config file:
-
-**Windows:** `%APPDATA%\Claude\claude_desktop_config.json`  
-**Mac:** `~/Library/Application Support/Claude/claude_desktop_config.json`
-
-Add this to the `mcpServers` section:
-
-```json
-{
-  "mcpServers": {
-    "fusion360": {
-      "command": "python",
-      "args": ["C:/path/to/fusion360-mcp/mcp-server/fusion360_mcp_server.py"]
-    }
-  }
-}
-```
-
-> **Note:** Use forward slashes in the path, even on Windows.
-
-### Step 4: Add the Skill File (Recommended)
-
-For best results, create a **Claude Project** and paste the contents of `docs/SKILL.md` into the **Project Instructions**. This teaches Claude:
-- Fusion 360 coordinate system rules
-- Unit conventions (everything in centimeters!)
-- Best practices for assemblies
-- Common pitfalls to avoid
-
-**For advanced spatial reasoning**, also include `docs/SPATIAL_AWARENESS.md`. This teaches Claude:
-- How to verify geometry placement BEFORE operations
-- Coordinate mapping between sketch planes and world space
-- The critical Z-negation rule for XZ/YZ planes
-- Pre/post operation verification protocols
-
-### Step 5: Restart and Test
-
-1. Restart Claude Desktop
-2. Open Fusion 360 (ensure the add-in is running)
-3. Ask Claude: *"Create a simple box that is 5cm x 3cm x 2cm"*
-
----
-
-## How It Works
+## Repository Structure
 
 ```
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”     MCP      â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”    File     â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚   Claude    â”‚ â†â†’ Protocol â†’ â”‚  MCP Server         â”‚ â†â†’ System â†â†’ â”‚  Fusion 360 â”‚
-â”‚   Desktop   â”‚              â”‚  (fusion360_mcp_    â”‚             â”‚  Add-in     â”‚
-â”‚             â”‚              â”‚   server.py)        â”‚             â”‚  (FusionMCP)â”‚
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜              â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜             â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+ClaudeFusion360MCP/
++-- skills/          # Skill files for CAD agents
++-- integration/     # AuraFriday setup and verification
++-- archive/         # Original rahayesj MCP code (preserved)
++-- docs/            # Analysis and research
 ```
 
-1. Claude sends commands via MCP protocol
-2. MCP server writes command to `~/fusion_mcp_comm/command_*.json`
-3. Fusion add-in polls for commands, executes them via Fusion API
-4. Results written to `~/fusion_mcp_comm/response_*.json`
-5. MCP server returns result to Claude
+## Origin
 
----
+Forked from [rahayesj/ClaudeFusion360MCP](https://github.com/rahayesj/ClaudeFusion360MCP), which pioneered the Claude-to-Fusion-360 concept with a 35-tool MCP server. This fork retains the exceptional spatial reasoning documentation and adds engineering literacy, while pivoting execution to AuraFriday MCP-Link for complete Fusion 360 API access.
 
-## Available Tools
+## Links
 
-| Category | Tools |
-|----------|-------|
-| **Sketching** | `create_sketch`, `draw_rectangle`, `draw_circle`, `draw_line`, `draw_arc`, `draw_polygon`, `draw_slot`, `finish_sketch` |
-| **3D Operations** | `extrude`, `revolve`, `sweep`, `loft`, `shell`, `draft` |
-| **Modifications** | `fillet`, `chamfer`, `combine`, `split_body` |
-| **Patterns** | `pattern_rectangular`, `pattern_circular`, `mirror` |
-| **Components** | `create_component`, `move_component`, `rotate_component`, `list_components` |
-| **Export/Import** | `export_stl`, `export_step`, `export_3mf`, `import_mesh` |
-| **Inspection** | `get_design_info`, `get_body_info`, `measure`, `fit_view` |
-| **Batch** | `batch_operations` (5-10x faster for multiple operations) |
-
-See `docs/TOOL_REFERENCE.md` for complete API documentation.
-
----
-
-## Important: Units Are in Centimeters!
-
-âš ï¸ **All dimensions in the MCP are in CENTIMETERS**, not millimeters.
-
-| You Want | You Enter |
-|----------|-----------|
-| 50 mm | `5.0` |
-| 100 mm | `10.0` |
-| 1 inch | `2.54` |
-
-This is the most common source of errors. A value of `50` means 50 cm (half a meter)!
-
----
-
-## Project Structure
-
-```
-fusion360-mcp/
-â”œâ”€â”€ README.md                 # This file
-â”œâ”€â”€ LICENSE                   # MIT License
-â”œâ”€â”€ mcp-server/
-â”‚   â””â”€â”€ fusion360_mcp_server.py   # MCP server (run by Claude Desktop)
-â”œâ”€â”€ fusion-addin/
-â”‚   â”œâ”€â”€ FusionMCP.py          # Fusion 360 add-in code
-â”‚   â””â”€â”€ FusionMCP.manifest    # Add-in manifest
-â”œâ”€â”€ docs/
-â”‚   â”œâ”€â”€ SKILL.md              # Claude Project instructions
-â”‚   â”œâ”€â”€ SPATIAL_AWARENESS.md  # 3D coordinate system & verification
-â”‚   â”œâ”€â”€ TOOL_REFERENCE.md     # Complete API reference
-â”‚   â””â”€â”€ KNOWN_ISSUES.md       # Common pitfalls and solutions
-â””â”€â”€ examples/
-    â””â”€â”€ getting_started.md    # Tutorial examples
-```
----
-
-## Example Workflows
-
-### Creating a Simple Part
-![Simple Box Creation](images/simple-box.png)
-*"Create a 5cm cube with 2mm rounded edges"*
-
-### Complex Assembly
-![Assembly Example](images/assembly-example.png)
-*Multi-component assembly with proper positioning*
-
-### Export Ready Files
-![Export Formats](images/export-formats.png)
-*Direct export to STL, STEP, and 3MF formats*
-
----
-
-## Troubleshooting
-
-### "Timeout after 45s" Error
-- Fusion 360 is not running, OR
-- The FusionMCP add-in is not started
-- **Fix:** Open Fusion 360 â†’ Utilities â†’ Add-Ins â†’ Run FusionMCP
-
-### Claude doesn't see the Fusion 360 tools
-- MCP server path is wrong in config
-- Python can't find the `mcp` package
-- **Fix:** Verify path uses forward slashes, run `pip install mcp`
-
-### Dimensions are way too big/small
-- You're using millimeters instead of centimeters
-- **Fix:** Divide all mm values by 10
-
-### Add-in won't install
-- Folder structure is wrong
-- **Fix:** The add-in folder must contain both `.py` and `.manifest` files
-
----
-
-## Contributing
-
-Contributions welcome! Please:
-1. Fork the repository
-2. Create a feature branch
-3. Submit a pull request
-
----
+- [AuraFriday MCP-Link (App Store)](https://apps.autodesk.com/FUSION/en/Detail/Index?id=7269770001970905100)
+- [AuraFriday MCP-Link Server (Releases)](https://github.com/AuraFriday/mcp-link-server/releases/tag/latest)
+- [Original rahayesj Repository](https://github.com/rahayesj/ClaudeFusion360MCP)
 
 ## License
 
 MIT License - see LICENSE file.
-
----
-
-## Credits
-
-- MCP Server & Add-in developed with Claude AI (Anthropic)
-- Uses the [Model Context Protocol](https://modelcontextprotocol.io/) by Anthropic
-- Built for [Autodesk Fusion 360](https://www.autodesk.com/products/fusion-360/)
