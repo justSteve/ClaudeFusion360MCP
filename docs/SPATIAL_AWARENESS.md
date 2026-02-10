@@ -1,22 +1,30 @@
 ﻿---
 name: spatial-awareness-cad
 description: Spatial reasoning and geometric verification protocols for CAD operations. Teaches coordinate interpretation, bounding box analysis, extrusion direction prediction, and pre/post operation verification. Designed to prevent geometry placement errors.
-version: 1.2.0
+version: 1.2.1
 model_target: claude-opus-4-5
 companion_skills: 
   - SKILL_Fusion360_Opus_v4.0.md
-last_updated: 2024-12-09
+last_updated: 2026-02-10
 ---
 
-# Spatial Awareness & Geometric Verification Skill v1.1
+# Spatial Awareness & Geometric Verification Skill v1.2
+
+> **Empirically Verified**: Every finding in this document was discovered through actual CAD
+> failures, not theoretical analysis. The Z-negation rule (Section 1.2) required three
+> failed attempts before the correct pattern was identified. The face index instability rule
+> (Section 4.4) was discovered when a shell operation destroyed a model by targeting the
+> wrong face. The XZ plane inversion was confirmed against Autodesk engineering documentation
+> (Jeff Strater, Engineering Director). **This knowledge transfers regardless of which MCP
+> implementation runs underneath.**
 
 ## Preamble: Why This Skill Exists
 
-This skill addresses a critical gap in AI-assisted CAD: **spatial reasoning verification**. 
-The Fusion 360 MCP skill teaches tool syntax; this skill teaches how to VERIFY that geometry 
+This skill addresses a critical gap in AI-assisted CAD: **spatial reasoning verification**.
+The Fusion 360 MCP skill teaches tool syntax; this skill teaches how to VERIFY that geometry
 will land where intended BEFORE executing operations.
 
-**Core Principle**: Never assume spatial relationships—verify them programmatically.
+**Core Principle**: Never assume spatial relationships — verify them programmatically.
 
 **Load this skill WITH the Fusion360 skill for any CAD work.**
 
@@ -224,7 +232,9 @@ Interior right surface: X = +4.25 - 0.3 = +3.95
 
 ---
 
-## Section 4: Error Case Library
+## Section 4: Empirically Verified Error Case Library
+
+The cases below were discovered through actual CAD failures during development. Each documents the failure scenario, root cause, correct pattern, and verification source where available. These findings are implementation-agnostic — they apply to any system that interfaces with Fusion 360's coordinate system and geometry kernel.
 
 ### 4.1 Error Case 001: Grip Ridges in Empty Space
 
@@ -440,15 +450,16 @@ Before executing, ask yourself:
 
 ```yaml
 skill_name: spatial-awareness-cad
-version: 1.2.0
+version: 1.2.1
 target_model: claude-opus-4-5
 companion_skills:
   - SKILL_Fusion360_Opus_v4.0.md
 created: 2024-12-09
-last_updated: 2024-12-09
+last_updated: 2026-02-10
 error_cases_documented: 4
 training_status: CALIBRATED - Z-negation rule verified
 changelog:
+  v1.2.1: Added empirical authority notice, clarified implementation-agnostic nature of error cases, updated metadata
   v1.2.0: Added Error Case 004 (face index instability), added INDEX INSTABILITY RULE
   v1.1.0: Added Z-negation rule (empirically verified), updated coordinate mapping tables, added error cases 002 and 003
   v1.0.0: Initial release
@@ -456,5 +467,5 @@ changelog:
 
 ---
 
-*End of Spatial Awareness & Geometric Verification Skill v1.1*
+*End of Spatial Awareness & Geometric Verification Skill v1.2*
 

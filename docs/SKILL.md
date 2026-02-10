@@ -119,7 +119,7 @@ Understanding plane selection is CRITICAL for correct geometry:
          |
          |
          +-------- +X (width)
-        
+
 Extrusion: +Z (up) or -Z (down)
 ```
 **Use For**: Floor plans, base plates, horizontal surfaces, table tops, PCB layouts.
@@ -130,7 +130,7 @@ Extrusion: +Z (up) or -Z (down)
          |
          |
          +-------- +X (width)
-        
+
 Extrusion: +Y (toward you) or -Y (away)
 ```
 **Use For**: Vertical panels, wall-mounted items, facades, elevation views.
@@ -141,7 +141,7 @@ Extrusion: +Y (toward you) or -Y (away)
          |
          |
          +-------- +Y (depth)
-        
+
 Extrusion: +X (right) or -X (left)
 ```
 **Use For**: Side profiles, cross-sections, lateral features.
@@ -170,7 +170,7 @@ When Z is part of the sketch plane (XZ or YZ), the sketch coordinate that maps t
 
 The Fusion 360 MCP currently **DOES NOT SUPPORT** boolean operations:
 - **No Cut operation**: Cannot subtract one body from another
-- **No Join operation**: Cannot merge bodies together  
+- **No Join operation**: Cannot merge bodies together
 - **No Intersect operation**: Cannot create intersection of bodies
 
 **Impact**: The `extrude()` function ALWAYS creates a NEW BODY. It cannot:
@@ -345,7 +345,7 @@ combine(operation="join", target_body=0, tool_bodies=[1,2,3])
 
 ### 2.1 Sketch Creation and Management
 
-#### `create_sketch(plane, offset=0)` ÃƒÂ¢Ã…â€œÃ‚Â¨ ENHANCED
+#### `create_sketch(plane, offset=0)` ✨ ENHANCED
 Initiates a new sketch on the specified construction plane.
 
 **Parameters**:
@@ -365,13 +365,13 @@ create_sketch(plane="XY", offset=-3)   # At Z=-3
 create_sketch(plane="XY")
 draw_rectangle(x1=-5, y1=-5, x2=5, y2=5)
 finish_sketch()
-extrude(distance=2)  # Z: 0ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢2
+extrude(distance=2)  # Z: 0→2
 create_component(name="Base")
 
 create_sketch(plane="XY", offset=2)  # Start where base ends!
 draw_rectangle(x1=-4, y1=-4, x2=4, y2=4)
 finish_sketch()
-extrude(distance=3)  # Z: 2ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢5
+extrude(distance=3)  # Z: 2→5
 create_component(name="Top")
 ```
 
@@ -424,12 +424,12 @@ draw_arc(start_x=-0.7, start_y=-0.8, end_x=-0.7, end_y=0.2, center_x=-0.7, cente
 **Visual Guide:**
 ```
 For a stadium shape (pill/obround):
-    
+
     ___________
    (           )   <- Arc curves OUTWARD (correct)
    |           |
    |           |
-   (___________) 
+   (___________)
 
 If arcs are inverted:
     ___________
@@ -448,11 +448,11 @@ Creates a regular polygon (default: hexagon).
 | `center_x` | number | Yes | - | Center X (cm) |
 | `center_y` | number | Yes | - | Center Y (cm) |
 | `radius` | number | Yes | - | Circumscribed radius (cm) |
-| `sides` | integer | No | 6 | Number of sides (ÃƒÂ¢Ã¢â‚¬Â°Ã‚Â¥3) |
+| `sides` | integer | No | 6 | Number of sides (≥3) |
 
 ### 2.3 Feature Creation Tools
 
-#### `extrude(distance, profile_index=0, taper_angle=0)` ÃƒÂ¢Ã…â€œÃ‚Â¨ ENHANCED
+#### `extrude(distance, profile_index=0, taper_angle=0)` ✨ ENHANCED
 Extrudes the most recent sketch profile.
 
 **Parameters**:
@@ -468,13 +468,13 @@ Extrudes the most recent sketch profile.
 create_sketch(plane="XY")
 draw_rectangle(x1=-5, y1=-5, x2=5, y2=5)
 finish_sketch()
-extrude(distance=10, taper_angle=2)  # 2Ãƒâ€šÃ‚Â° taper for injection molding
+extrude(distance=10, taper_angle=2)  # 2° taper for injection molding
 ```
 
 #### `revolve(angle)`
 Revolves profile around the sketch's Y-axis.
 
-#### `fillet(radius, edges=None, body_index=None)` ÃƒÂ¢Ã…â€œÃ‚Â¨ ENHANCED
+#### `fillet(radius, edges=None, body_index=None)` ✨ ENHANCED
 Applies rounded fillets to edges.
 
 **Parameters**:
@@ -496,7 +496,7 @@ fillet(radius=0.2, edges=[0, 1, 5, 6])  # Top edges only
 fillet(radius=0.2)
 ```
 
-#### `chamfer(distance, edges=None, body_index=None)` ÃƒÂ¢Ã…â€œÃ‚Â¨ ENHANCED
+#### `chamfer(distance, edges=None, body_index=None)` ✨ ENHANCED
 Applies beveled chamfers to edges.
 
 **Parameters**:
@@ -514,7 +514,7 @@ chamfer(distance=0.1, edges=[8, 9, 10, 11])
 
 ### 2.4 NEW: Shell, Draft, Patterns, and Mirror
 
-#### `shell(thickness, faces_to_remove=None, body_index=None)` ÃƒÂ¢Ã‚Â­Ã‚Â NEW
+#### `shell(thickness, faces_to_remove=None, body_index=None)` ⭐ NEW
 Creates a hollow shell from a solid body.
 
 **Parameters**:
@@ -543,7 +543,7 @@ shell(thickness=0.2, faces_to_remove=[0, 2])
 - Weight reduction
 - Material savings
 
-#### `draft(angle, faces=None, body_index=None, pull_x=0, pull_y=0, pull_z=1)` ÃƒÂ¢Ã‚Â­Ã‚Â NEW
+#### `draft(angle, faces=None, body_index=None, pull_x=0, pull_y=0, pull_z=1)` ⭐ NEW
 Applies draft angles for injection molding.
 
 **Parameters**:
@@ -554,7 +554,7 @@ Applies draft angles for injection molding.
 | `body_index` | integer | No | Last | Which body to draft |
 | `pull_x/y/z` | number | No | 0,0,1 | Pull direction vector |
 
-**Manufacturing Guideline**: 1Ãƒâ€šÃ‚Â° per inch of depth minimum.
+**Manufacturing Guideline**: 1° per inch of depth minimum.
 
 ```python
 # Standard draft for injection molding
@@ -565,7 +565,7 @@ get_body_info()  # Find vertical face indices
 draft(angle=1.5, faces=[1, 2, 3, 4])
 ```
 
-#### `pattern_rectangular(x_count, x_spacing, y_count=1, y_spacing=0, body_index=None)` ÃƒÂ¢Ã‚Â­Ã‚Â NEW
+#### `pattern_rectangular(x_count, x_spacing, y_count=1, y_spacing=0, body_index=None)` ⭐ NEW
 Creates a rectangular (linear) pattern.
 
 **Parameters**:
@@ -584,7 +584,7 @@ pattern_rectangular(x_count=5, x_spacing=2)  # 5 instances, 2cm apart
 
 # Grid array (2D)
 pattern_rectangular(x_count=4, x_spacing=2.5, y_count=3, y_spacing=2.5)
-# Creates 4ÃƒÆ’Ã¢â‚¬â€3 = 12 instances
+# Creates 4×3 = 12 instances
 ```
 
 **Use Cases**:
@@ -593,7 +593,7 @@ pattern_rectangular(x_count=4, x_spacing=2.5, y_count=3, y_spacing=2.5)
 - Ventilation slots
 - Repeated features
 
-#### `pattern_circular(count, angle=360, axis="Z", body_index=None)` ÃƒÂ¢Ã‚Â­Ã‚Â NEW
+#### `pattern_circular(count, angle=360, axis="Z", body_index=None)` ⭐ NEW
 Creates a circular (radial) pattern.
 
 **Parameters**:
@@ -622,7 +622,7 @@ pattern_circular(count=8, axis="X")
 - Spoke patterns
 - Decorative features
 
-#### `mirror(plane="YZ", body_index=None)` ÃƒÂ¢Ã‚Â­Ã‚Â NEW
+#### `mirror(plane="YZ", body_index=None)` ⭐ NEW
 Creates a mirrored copy of a body.
 
 **Parameters**:
@@ -657,9 +657,9 @@ Removes a component by name or index.
 #### `check_interference()`
 Detects bounding box collisions. **MANDATORY** after every component creation.
 
-### 2.6 NEW: Component Positioning ÃƒÂ¢Ã‚Â­Ã‚Â CRITICAL
+### 2.6 NEW: Component Positioning ⭐ CRITICAL
 
-#### `move_component(x=0, y=0, z=0, index=None, name=None, absolute=True)` ÃƒÂ¢Ã‚Â­Ã‚Â NEW
+#### `move_component(x=0, y=0, z=0, index=None, name=None, absolute=True)` ⭐ NEW
 Moves a component to a new position.
 
 **Parameters**:
@@ -712,7 +712,7 @@ list_components()
 check_interference()
 ```
 
-#### `rotate_component(angle, axis="Z", index=None, name=None, origin_x=0, origin_y=0, origin_z=0)` ÃƒÂ¢Ã‚Â­Ã‚Â NEW
+#### `rotate_component(angle, axis="Z", index=None, name=None, origin_x=0, origin_y=0, origin_z=0)` ⭐ NEW
 Rotates a component around an axis.
 
 **Parameters**:
@@ -726,7 +726,7 @@ Rotates a component around an axis.
 
 **Examples**:
 ```python
-# Rotate 45Ãƒâ€šÃ‚Â° around Z-axis
+# Rotate 45° around Z-axis
 rotate_component(angle=45, axis="Z", index=1)
 
 # Rotate around a specific point
@@ -768,7 +768,7 @@ Animates a slider joint.
 
 ### 2.8 NEW: Inspection and Measurement
 
-#### `get_body_info(body_index=None)` ÃƒÂ¢Ã‚Â­Ã‚Â NEW
+#### `get_body_info(body_index=None)` ⭐ NEW
 Returns detailed information about edges and faces.
 
 **Parameters**:
@@ -800,7 +800,7 @@ Returns detailed information about edges and faces.
 - Find face indices for shell openings or draft
 - Understand geometry structure
 
-#### `measure(type="body", body_index=None, edge_index=None, face_index=None)` ÃƒÂ¢Ã‚Â­Ã‚Â NEW
+#### `measure(type="body", body_index=None, edge_index=None, face_index=None)` ⭐ NEW
 Measures dimensions of geometry.
 
 **Parameters**:
@@ -815,8 +815,8 @@ Measures dimensions of geometry.
 ```python
 # type="body"
 {
-  "volume": 150.0,      # cmÃƒâ€šÃ‚Â³
-  "surface_area": 220.0, # cmÃƒâ€šÃ‚Â²
+  "volume": 150.0,      # cm³
+  "surface_area": 220.0, # cm²
   "bounding_box": {
     "min": {"x": -5, "y": -5, "z": 0},
     "max": {"x": 5, "y": 5, "z": 3},
@@ -1003,7 +1003,7 @@ fit_view()
 |---------|---------|-------------|
 | Wall thickness | 0.08cm | 0.12cm+ |
 | Hole diameter | Design + 0.02cm | Design + 0.04cm |
-| Overhang angle | 45Ãƒâ€šÃ‚Â° | 35Ãƒâ€šÃ‚Â° |
+| Overhang angle | 45° | 35° |
 
 ### 4.2 Design for SLA/Resin
 
@@ -1017,23 +1017,23 @@ fit_view()
 
 | Feature | Guideline |
 |---------|-----------|
-| Internal corners | Radius ÃƒÂ¢Ã¢â‚¬Â°Ã‚Â¥ tool radius |
-| Wall thickness | ÃƒÂ¢Ã¢â‚¬Â°Ã‚Â¥ 0.08cm |
-| Hole depth | ÃƒÂ¢Ã¢â‚¬Â°Ã‚Â¤ 4ÃƒÆ’Ã¢â‚¬â€ diameter |
+| Internal corners | Radius ≥ tool radius |
+| Wall thickness | ≥ 0.08cm |
+| Hole depth | ≤ 4× diameter |
 
 ### 4.4 Design for Injection Molding
 
 | Feature | Specification |
 |---------|---------------|
 | Wall thickness | 0.15-0.25cm |
-| Draft angle | 1Ãƒâ€šÃ‚Â° per inch minimum |
+| Draft angle | 1° per inch minimum |
 | Rib thickness | 50-60% of wall |
-| Internal fillet | ÃƒÂ¢Ã¢â‚¬Â°Ã‚Â¥ 50% wall thickness |
+| Internal fillet | ≥ 50% wall thickness |
 
 **Using Draft Tool**:
 ```python
 # After creating geometry
-draft(angle=1.0)  # 1Ãƒâ€šÃ‚Â° draft on all faces
+draft(angle=1.0)  # 1° draft on all faces
 
 # Or selective draft
 get_body_info()  # Find vertical face indices
@@ -1089,17 +1089,17 @@ draft(angle=1.5, faces=[1, 2, 3, 4])  # Vertical faces only
 ```
 ALWAYS USE CENTIMETERS
 
-mm ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ cm: ÃƒÆ’Ã‚Â· 10     (5mm = 0.5cm)
-inches ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ cm: ÃƒÆ’Ã¢â‚¬â€ 2.54  (1" = 2.54cm)
-m ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ cm: ÃƒÆ’Ã¢â‚¬â€ 100     (0.1m = 10cm)
+mm → cm: ÷ 10     (5mm = 0.5cm)
+inches → cm: × 2.54  (1" = 2.54cm)
+m → cm: × 100     (0.1m = 10cm)
 ```
 
 ### 5.3 Plane Selection
 
 ```
-Horizontal surface  ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ XY (extrude Ãƒâ€šÃ‚Â±Z)
-Vertical front      ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ XZ (extrude Ãƒâ€šÃ‚Â±Y)
-Side profile        ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ YZ (extrude Ãƒâ€šÃ‚Â±X)
+Horizontal surface  → XY (extrude ±Z)
+Vertical front      → XZ (extrude ±Y)
+Side profile        → YZ (extrude ±X)
 ```
 
 ### 5.4 Verification Commands
@@ -1307,7 +1307,7 @@ batch([
 | CPI Document | Key Lesson | Hard Constraint |
 |--------------|------------|-----------------|
 | UnitConfusion | ALL values in cm | Divide mm by 10 before API call |
-| ExtrusionDirection | Know where material goes | Check plane?direction mapping |
+| ExtrusionDirection | Know where material goes | Check plane→direction mapping |
 | ComponentPositioning | Stack vs Spread | Query positions BEFORE moving |
 | BladeBevels | Use chamfer for edges | Never use boolean cuts for bevels |
 
@@ -1324,11 +1324,10 @@ batch([
 | **Save** | Persists .f3d design to Fusion cloud | Design preserved in Fusion |
 | **Export** | Creates copy in external format | STL/STEP file on disk |
 
-**Ã¢Å¡Â Ã¯Â¸Â Export does NOT save the design.** These are separate operations.
+**⚠️ Export does NOT save the design.** These are separate operations.
 
 The current MCP does not have a `save_design` command. If a user asks to "save", you must:
 1. Inform them: "The MCP cannot save directly to Fusion 360's cloud storage"
-2. Request they manually save via **File Ã¢â€ â€™ Save** or **Ctrl+S**
+2. Request they manually save via **File → Save** or **Ctrl+S**
 3. Wait for confirmation before proceeding
 4. Then export if also requested
-

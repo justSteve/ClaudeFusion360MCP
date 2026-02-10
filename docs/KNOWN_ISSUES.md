@@ -2,6 +2,11 @@
 
 Common pitfalls when using the Fusion 360 MCP, and how to avoid them.
 
+> **Note on Empirical Verification**: Issues #11 (XZ Plane Y-Axis Inversion) and #12
+> (Auto-Join Protocol) are empirically verified against Autodesk engineering documentation
+> and real CAD failures. These findings are implementation-agnostic — they apply to any
+> system that interfaces with Fusion 360's coordinate system, not just this MCP implementation.
+
 ---
 
 ## 1. Unit Confusion (Most Common!)
@@ -14,7 +19,7 @@ All MCP dimensions are in **centimeters**, but users often think in millimeters.
 - A "50mm box" becomes half a meter
 
 ### Solution
-**Always convert:** `mm ÃƒÂ· 10 = cm`
+**Always convert:** `mm ÷ 10 = cm`
 
 | User Says | You Enter |
 |-----------|-----------|
@@ -72,12 +77,12 @@ User asks to "save" but Claude exports a STEP file. Design is lost when Fusion c
 | **Save** | Persists .f3d to Fusion cloud |
 | **Export** | Creates external file (STL, STEP) |
 
-**Export Ã¢â€°Â  Save.** They are completely different operations.
+**Export ≠ Save.** They are completely different operations.
 
 ### Solution
 The MCP currently lacks a save command. When user says "save":
 1. Inform them the MCP cannot save directly
-2. Ask them to manually save (Ctrl+S or File Ã¢â€ â€™ Save)
+2. Ask them to manually save (Ctrl+S or File → Save)
 3. Wait for confirmation
 4. Then export if requested
 
@@ -116,7 +121,7 @@ Deleting a component causes index shifts, breaking subsequent operations.
 Holes for fasteners are wrong size or position.
 
 ### Solution
-Standard clearance holes (mm Ã¢â€ â€™ cm for MCP):
+Standard clearance holes (mm → cm for MCP):
 
 | Fastener | Clearance Hole | Enter in MCP |
 |----------|---------------|--------------|
@@ -172,10 +177,6 @@ This is 5-10x faster than individual calls.
 
 ---
 
-
-
----
-
 ## 11. XZ Plane Y-Axis Inversion (CONFIRMED - BY DESIGN)
 
 ### Problem
@@ -192,18 +193,18 @@ To satisfy BOTH requirements, Sketch Y must map to -World Z.
 
 ```
 XZ Plane Coordinate Mapping:
-  Sketch X  â†’  World X   (unchanged)
-  Sketch Y  â†’  World -Z  (INVERTED!)
-  Extrude+  â†’  World +Y  (as expected)
+  Sketch X  →  World X   (unchanged)
+  Sketch Y  →  World -Z  (INVERTED!)
+  Extrude+  →  World +Y  (as expected)
 ```
 
 ### Plane Comparison
 
 | Plane | Sketch X | Sketch Y | Normal (Extrude+) | Natural? |
 |-------|----------|----------|-------------------|----------|
-| XY | World +X | World +Y | World +Z | âœ“ Yes |
-| YZ | World +Y | World +Z | World +X | âœ“ Yes |
-| **XZ** | World +X | **World -Z** | World +Y | âœ— **INVERTED** |
+| XY | World +X | World +Y | World +Z | ✓ Yes |
+| YZ | World +Y | World +Z | World +X | ✓ Yes |
+| **XZ** | World +X | **World -Z** | World +Y | ✗ **INVERTED** |
 
 ### Solution: Negate Y for Z Positioning
 
