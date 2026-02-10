@@ -27,12 +27,12 @@
 ### Planes
 | Plane | Horizontal | Vertical | Extrusion |
 |-------|------------|----------|-----------|
-| XY | X | Y | Â±Z |
-| XZ | X | Z | Â±Y |
-| YZ | Y | Z | Â±X |
+| XY | X | Y | ±Z |
+| XZ | X | Z | ±Y |
+| YZ | Y | Z | ±X |
 
 ### Sketch-to-World Mapping
-| Sketch Plane | Sketch X â†’ | Sketch Y â†’ | Extrude + â†’ |
+| Sketch Plane | Sketch X → | Sketch Y → | Extrude + → |
 |--------------|------------|------------|-------------|
 | XY | World X | World Y | World +Z |
 | XZ | World X | World Z | World +Y |
@@ -46,7 +46,7 @@
 
 #### create_sketch
 ```
-create_sketch(plane: str, offset: float = 0) â†’ dict
+create_sketch(plane: str, offset: float = 0) → dict
 ```
 Create sketch on construction plane.
 
@@ -63,25 +63,25 @@ create_sketch(plane="XY", offset=5) # 5cm above origin
 
 #### finish_sketch
 ```
-finish_sketch() â†’ dict
+finish_sketch() → dict
 ```
 Exit sketch editing mode.
 
 #### draw_rectangle
 ```
-draw_rectangle(x1: float, y1: float, x2: float, y2: float) â†’ dict
+draw_rectangle(x1: float, y1: float, x2: float, y2: float) → dict
 ```
 Draw rectangle by two corners (cm).
 
 #### draw_circle
 ```
-draw_circle(center_x: float, center_y: float, radius: float) â†’ dict
+draw_circle(center_x: float, center_y: float, radius: float) → dict
 ```
 Draw circle by center and radius (cm).
 
 #### draw_line
 ```
-draw_line(x1: float, y1: float, x2: float, y2: float) â†’ dict
+draw_line(x1: float, y1: float, x2: float, y2: float) → dict
 ```
 Draw line segment (cm).
 
@@ -89,14 +89,14 @@ Draw line segment (cm).
 ```
 draw_arc(center_x: float, center_y: float, 
          start_x: float, start_y: float, 
-         end_x: float, end_y: float) â†’ dict
+         end_x: float, end_y: float) → dict
 ```
 Draw arc by center and endpoints (cm).
 
 #### draw_polygon
 ```
 draw_polygon(center_x: float, center_y: float, 
-             radius: float, sides: int = 6) â†’ dict
+             radius: float, sides: int = 6) → dict
 ```
 Draw regular polygon (cm).
 
@@ -106,7 +106,7 @@ Draw regular polygon (cm).
 
 #### extrude
 ```
-extrude(distance: float, profile_index: int = 0, taper_angle: float = 0) â†’ dict
+extrude(distance: float, profile_index: int = 0, taper_angle: float = 0) → dict
 ```
 Extrude sketch profile.
 
@@ -114,17 +114,17 @@ Extrude sketch profile.
 |-----------|------|----------|---------|-------------|
 | distance | float | Yes | - | Extrusion distance (cm) |
 | profile_index | int | No | 0 | Which profile to extrude |
-| taper_angle | float | No | 0 | Draft angle during extrusion (Â°) |
+| taper_angle | float | No | 0 | Draft angle during extrusion (°) |
 
 #### revolve
 ```
-revolve(angle: float) â†’ dict
+revolve(angle: float) → dict
 ```
 Revolve profile around Y-axis (degrees).
 
 #### fillet
 ```
-fillet(radius: float, edges: list = None, body_index: int = None) â†’ dict
+fillet(radius: float, edges: list = None, body_index: int = None) → dict
 ```
 Apply fillets to edges.
 
@@ -136,7 +136,7 @@ Apply fillets to edges.
 
 #### chamfer
 ```
-chamfer(distance: float, edges: list = None, body_index: int = None) â†’ dict
+chamfer(distance: float, edges: list = None, body_index: int = None) → dict
 ```
 Apply chamfers to edges.
 
@@ -146,9 +146,9 @@ Apply chamfers to edges.
 | edges | list | No | None | Edge indices (None = all) |
 | body_index | int | No | Last | Which body |
 
-#### shell â­ NEW
+#### shell ⭐ NEW
 ```
-shell(thickness: float, faces_to_remove: list = None, body_index: int = None) â†’ dict
+shell(thickness: float, faces_to_remove: list = None, body_index: int = None) → dict
 ```
 Create hollow shell from solid.
 
@@ -158,10 +158,10 @@ Create hollow shell from solid.
 | faces_to_remove | list | No | None | Face indices to open |
 | body_index | int | No | Last | Which body |
 
-#### draft â­ NEW
+#### draft ⭐ NEW
 ```
 draft(angle: float, faces: list = None, body_index: int = None,
-      pull_x: float = 0, pull_y: float = 0, pull_z: float = 1) â†’ dict
+      pull_x: float = 0, pull_y: float = 0, pull_z: float = 1) → dict
 ```
 Apply draft angles for molding.
 
@@ -172,11 +172,11 @@ Apply draft angles for molding.
 | body_index | int | No | Last | Which body |
 | pull_x/y/z | float | No | 0,0,1 | Pull direction |
 
-#### pattern_rectangular â­ NEW
+#### pattern_rectangular ⭐ NEW
 ```
 pattern_rectangular(x_count: int, x_spacing: float,
                     y_count: int = 1, y_spacing: float = 0,
-                    body_index: int = None) â†’ dict
+                    body_index: int = None) → dict
 ```
 Create linear pattern.
 
@@ -188,10 +188,10 @@ Create linear pattern.
 | y_spacing | float | No | 0 | Spacing in Y (cm) |
 | body_index | int | No | Last | Which body |
 
-#### pattern_circular â­ NEW
+#### pattern_circular ⭐ NEW
 ```
 pattern_circular(count: int, angle: float = 360, 
-                 axis: str = "Z", body_index: int = None) â†’ dict
+                 axis: str = "Z", body_index: int = None) → dict
 ```
 Create radial pattern.
 
@@ -202,9 +202,9 @@ Create radial pattern.
 | axis | string | No | "Z" | Rotation axis |
 | body_index | int | No | Last | Which body |
 
-#### mirror â­ NEW
+#### mirror ⭐ NEW
 ```
-mirror(plane: str = "YZ", body_index: int = None) â†’ dict
+mirror(plane: str = "YZ", body_index: int = None) → dict
 ```
 Mirror geometry.
 
@@ -219,33 +219,33 @@ Mirror geometry.
 
 #### create_component
 ```
-create_component(name: str = None) â†’ dict
+create_component(name: str = None) → dict
 ```
 Convert body to component.
 
 #### list_components
 ```
-list_components() â†’ dict
+list_components() → dict
 ```
 Get all components with positions and bounding boxes.
 
 #### delete_component
 ```
-delete_component(name: str = None, index: int = None) â†’ dict
+delete_component(name: str = None, index: int = None) → dict
 ```
 Remove component by name or index.
 
 #### check_interference
 ```
-check_interference() â†’ dict
+check_interference() → dict
 ```
 Detect bounding box collisions.
 
-#### move_component â­ NEW
+#### move_component ⭐ NEW
 ```
 move_component(x: float = 0, y: float = 0, z: float = 0,
                index: int = None, name: str = None, 
-               absolute: bool = True) â†’ dict
+               absolute: bool = True) → dict
 ```
 Position component.
 
@@ -256,12 +256,12 @@ Position component.
 | name | string | No | None | Component name |
 | absolute | bool | No | True | True=position, False=offset |
 
-#### rotate_component â­ NEW
+#### rotate_component ⭐ NEW
 ```
 rotate_component(angle: float, axis: str = "Z",
                  index: int = None, name: str = None,
                  origin_x: float = 0, origin_y: float = 0, 
-                 origin_z: float = 0) â†’ dict
+                 origin_z: float = 0) → dict
 ```
 Rotate component.
 
@@ -284,7 +284,7 @@ create_revolute_joint(component1_index: int = None,
                       x: float = 0, y: float = 0, z: float = 0,
                       axis_x: float = 0, axis_y: float = 0, axis_z: float = 1,
                       min_angle: float = None, max_angle: float = None,
-                      flip: bool = False) â†’ dict
+                      flip: bool = False) → dict
 ```
 Create hinge joint.
 
@@ -294,19 +294,19 @@ create_slider_joint(component1_index: int = None,
                     component2_index: int = None,
                     x: float = 0, y: float = 0, z: float = 0,
                     axis_x: float = 1, axis_y: float = 0, axis_z: float = 0,
-                    min_distance: float = None, max_distance: float = None) â†’ dict
+                    min_distance: float = None, max_distance: float = None) → dict
 ```
 Create sliding joint.
 
 #### set_joint_angle
 ```
-set_joint_angle(angle: float, joint_index: int = None) â†’ dict
+set_joint_angle(angle: float, joint_index: int = None) → dict
 ```
 Animate revolute joint (degrees).
 
 #### set_joint_distance
 ```
-set_joint_distance(distance: float, joint_index: int = None) â†’ dict
+set_joint_distance(distance: float, joint_index: int = None) → dict
 ```
 Animate slider joint (cm).
 
@@ -314,9 +314,9 @@ Animate slider joint (cm).
 
 ### Inspection Tools
 
-#### get_body_info â­ NEW
+#### get_body_info ⭐ NEW
 ```
-get_body_info(body_index: int = None) â†’ dict
+get_body_info(body_index: int = None) → dict
 ```
 Get edge and face information.
 
@@ -337,10 +337,10 @@ Get edge and face information.
 }
 ```
 
-#### measure â­ NEW
+#### measure ⭐ NEW
 ```
 measure(type: str = "body", body_index: int = None,
-        edge_index: int = None, face_index: int = None) â†’ dict
+        edge_index: int = None, face_index: int = None) → dict
 ```
 Measure geometry.
 
@@ -352,13 +352,13 @@ Measure geometry.
 
 #### get_design_info
 ```
-get_design_info() â†’ dict
+get_design_info() → dict
 ```
 Get design statistics.
 
 #### fit_view
 ```
-fit_view() â†’ dict
+fit_view() → dict
 ```
 Zoom to fit all geometry.
 
@@ -368,21 +368,21 @@ Zoom to fit all geometry.
 
 #### export_stl / export_step / export_3mf
 ```
-export_stl(filepath: str) â†’ dict
-export_step(filepath: str) â†’ dict
-export_3mf(filepath: str) â†’ dict
+export_stl(filepath: str) → dict
+export_step(filepath: str) → dict
+export_3mf(filepath: str) → dict
 ```
 Export design to file.
 
 #### import_mesh
 ```
-import_mesh(filepath: str, unit: str = "mm") â†’ dict
+import_mesh(filepath: str, unit: str = "mm") → dict
 ```
 Import mesh file. Units: "mm", "cm", "in".
 
 #### batch
 ```
-batch(commands: list) â†’ dict
+batch(commands: list) → dict
 ```
 Execute multiple commands.
 
@@ -406,7 +406,7 @@ batch([
 |---------|---------|-------------|
 | Wall thickness | 0.08cm | 0.12cm |
 | Hole compensation | +0.02cm | +0.04cm |
-| Overhang angle | 45Â° | 35Â° |
+| Overhang angle | 45° | 35° |
 | Bridge length | 1cm | 0.5cm |
 
 ### 3D Printing (SLA)
@@ -421,18 +421,18 @@ batch([
 
 | Feature | Guideline |
 |---------|-----------|
-| Internal corner radius | â‰¥ tool radius |
-| Wall thickness | â‰¥ 0.08cm |
-| Hole depth | â‰¤ 4Ã— diameter |
+| Internal corner radius | ≥ tool radius |
+| Wall thickness | ≥ 0.08cm |
+| Hole depth | ≤ 4× diameter |
 
 ### Injection Molding
 
 | Feature | Specification |
 |---------|---------------|
 | Wall thickness | 0.15-0.25cm |
-| Draft angle | 1Â° per inch minimum |
+| Draft angle | 1° per inch minimum |
 | Rib thickness | 50-60% of wall |
-| Internal fillet | â‰¥ 50% wall thickness |
+| Internal fillet | ≥ 50% wall thickness |
 
 ---
 
