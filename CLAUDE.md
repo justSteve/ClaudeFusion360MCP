@@ -89,6 +89,25 @@ ClaudeFusion360MCP/
 - **AuraFriday MCP-Link:** https://apps.autodesk.com/FUSION/en/Detail/Index?id=7269770001970905100
 - **AuraFriday GitHub:** https://github.com/AuraFriday/Fusion-360-MCP-Server
 
+## Fusion 360 CAD Operations
+
+When performing CAD operations via the fusion360 MCP tool, load and follow these skill files:
+
+- **Primary skill:** `skills/SKILL.md` - coordinate systems, assembly, manufacturing
+- **Spatial verification:** `skills/SPATIAL_AWARENESS.md` - pre/post operation checklists
+- **Engineering literacy:** `skills/ENGINEERING_LITERACY.md` - tolerances, model-vs-reality
+- **API recipes:** `skills/AURAFRIDAY_PATTERNS.md` - Python execution templates
+- **Troubleshooting:** `skills/KNOWN_ISSUES.md` - error case library
+
+**Mandatory rules:**
+
+1. ALL dimensions in centimeters (divide mm by 10)
+2. XZ plane: Sketch Y = World -Z (negated)
+3. YZ plane: Sketch X = World -Z (negated)
+4. Re-query face/edge indices after every geometry operation
+5. Never auto-join - create as separate bodies, verify with user, then combine
+6. State manufacturing method and model-vs-reality for every part
+
 ## Debugging
 
 - Fusion 360 logs appear in the Text Commands palette (View > Text Commands)

@@ -3,90 +3,6 @@
 **Status:** DRAFT - sections marked [TODO] need verification after Phase 1 installation
 **Created:** 2026-02-10
 **Repository:** https://github.com/justSteve/ClaudeFusion360MCP
-
----
-
-## Overview
-
-This guide explains how to combine **AuraFriday MCP-Link** (the proven Fusion 360 connection layer) with the **spatial reasoning skill files** from this repository (empirically-verified coordinate system rules, verification protocols, and CAD best practices).
-
-The result: Claude gets both the ability to execute Fusion 360 API calls (via AuraFriday) and the spatial awareness needed to place geometry correctly (via these skill files).
-
-```
-Architecture:
-
-  Claude Desktop / Claude Code
-    |
-    +-- Skill files loaded (SKILL.md, SPATIAL_AWARENESS.md)
-    |   Provides: coordinate rules, Z-negation, verification protocols,
-    |             unit conversion, manufacturing guidelines
-    |
-    +-- AuraFriday MCP-Link Server (MCP connection)
-        |   Provides: fusion360 tool with generic API, Python execution,
-        |             documentation lookup, context management
-        |
-        +-- Fusion 360 (via MCP-Link add-in)
-            Provides: actual CAD modeling environment
-```
-
----
-
-## Prerequisites
-
-Before starting, ensure you have:
-
-1. **Fusion 360** (Personal Use license or higher)
-   - Download: https://www.autodesk.com/products/fusion-360/personal
-   - Must be installed and working before proceeding
-
-2. **AuraFriday MCP-Link Add-in** (Fusion 360 side)
-   - Autodesk App Store: https://apps.autodesk.com/FUSION/en/Detail/Index?id=7269770001970905100
-   - This is the add-in that runs inside Fusion 360 and connects to the MCP server
-
-3. **AuraFriday MCP-Link Server** (local machine side)
-   - Download from: https://github.com/AuraFriday/mcp-link-server/releases/tag/latest
-   - Platform-specific installers available:
-     - Windows: `mcp-link-server-windows.exe`
-     - macOS (Intel): `mcp-link-server-macos-intel.pkg`
-     - macOS (Apple Silicon): `mcp-link-server-macos-arm.pkg`
-     - Linux: `mcp-link-server-linux.run`
-
-4. **Claude Desktop** or **Claude Code**
-   - Claude Desktop: https://claude.ai/download
-   - Claude Code: `npm install -g @anthropic-ai/claude-code`
-
-5. **This repository** (for skill files)
-   - `git clone https://github.com/justSteve/ClaudeFusion360MCP.git`
-
----
-
-## Installation Steps
-
-### Step 1: Install Fusion 360
-
-Download and install Fusion 360. Create an Autodesk account if you do not have one. The Personal Use license is free and sufficient for this integration.
-
-### Step 2: Install the MCP-Link Add-in
-
-Install from the Autodesk App Store link above. After installation:
-
-1. Open Fusion 360
-2. Press `Shift+S` to open Scripts and Add-Ins
-3. Click the **Add-Ins** tab
-4. Verify "MCP-Link" (or "MCPLinkFusion") appears in the list
-5. Check "Run on Startup" to auto-load the add-in
-6. Click **Run** to start it for this session
-
-The add-in auto-connects to the MCP-Link server on startup. Check the **TEXT COMMANDS** window in Fusion 360 (View > Text Commands) for connection logs.
-
-### Step 3: Install the MCP-Link Server
-
-Run the platform-specific installer downloaded from the releases page. The installer includes everything needed: Python runtime, dependencies, and the server itself.
-
-After installation, launch MCP-Link Server from your applications menu. It should start and show a ready status.
-
-[TODO: Confirm exact server startup behavior and what "ready" looks like in the UI after C1 research]
-
 ### Step 4: Clone This Repository
 
 ```bash
@@ -141,19 +57,21 @@ Windows (if installed via installer):
 }
 ```
 
-[TODO: Confirm actual installation path and executable name for Windows installer. The server may use SSE transport rather than stdio, in which case the config would look like:]
+**Note:** AuraFriday MCP-Link uses SSE transport (not stdio). Use this config format:
+
+
 
 ```json
 {
   "mcpServers": {
     "fusion-mcp-link": {
-      "url": "http://localhost:PORT/sse"
+      "url": "https://127-0-0-1.local.aurafriday.com:31173/sse"
     }
   }
 }
 ```
 
-[TODO: Confirm the port number. Check AuraFriday documentation for the exact SSE endpoint URL.]
+**Confirmed SSE endpoint:** `https://127-0-0-1.local.aurafriday.com:31173/sse`
 
 ---
 

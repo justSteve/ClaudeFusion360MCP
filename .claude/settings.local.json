@@ -14,5 +14,9 @@
       "mcp__fetch__*",
       "mcp__sequential-thinking__*"
     ]
-  }
+  },
+  "enabledMcpjsonServers": [
+    "fusion-mcp-link"
+  ],
+  "enableAllProjectMcpServers": true
 }
